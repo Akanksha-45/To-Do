@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddForm from "./AddForm";
 
 const initialTasks = [
@@ -18,7 +18,7 @@ const initialTasks = [
   },
 ];
 
-const Todo = ({ activeListId, sortBy }) => {
+const Todo = ({ activeListId, sortBy, quickTaskText, onQuickTaskUsed }) => {
   const [tasks, setTasks] = useState(initialTasks);
 
   const addTask = (text) => {
@@ -67,8 +67,10 @@ const Todo = ({ activeListId, sortBy }) => {
       if (a.done === b.done) return 0;
       return a.done ? 1 : -1; 
     }
-    return 0;
+    return 0; 
   });
+
+  
 
   return (
     <div className="bg-slate-950/80 rounded-2xl border border-slate-800/60 px-3 sm:px-4 md:px-6 py-4 sm:py-5 backdrop-blur shadow-xl">
@@ -145,8 +147,12 @@ const Todo = ({ activeListId, sortBy }) => {
         ))}
       </div>
 
-     
-      <AddForm onAdd={addTask} />
+      
+      <AddForm
+        onAdd={addTask}
+        quickText={quickTaskText}
+        onQuickUsed={onQuickTaskUsed}
+      />
     </div>
   );
 };

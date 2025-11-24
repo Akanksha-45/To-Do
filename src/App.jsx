@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Todo from "./components/ToDo";
-
+import themeIcon from "./assets/icons8-theme-94.png";
+import suggestionIcon from "./assets/icons8-suggestion-64.png";
+const [quickTaskText, setQuickTaskText] = useState("");
 
 
 const initialLists = [
@@ -79,6 +81,11 @@ const themes = [
   },
 ];
 
+const handleSuggestionClick = (text) => {
+  setQuickTaskText(text);       
+  setIsSuggestionsOpen(false);
+};
+
 const getWeekDays = (currentDate) => {
   const day = currentDate.getDay();
   const weekStart = new Date(currentDate);
@@ -92,8 +99,6 @@ const getWeekDays = (currentDate) => {
   }
   return days;
 };
-
-
 
 const App = () => {
   const [lists, setLists] = useState(initialLists);
@@ -134,8 +139,6 @@ const App = () => {
   const activeTheme = themes.find((t) => t.id === activeThemeId) || themes[0];
 
   const selectedList = lists.find((l) => l.id === selectedListId);
-
-  
 
   const handlePrintList = () => {
     setIsSidebarMoreOpen(false);
@@ -231,13 +234,24 @@ const App = () => {
 
   return (
     <>
-      <div className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col md:flex-row">
+     
+      <div
+        className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col md:flex-row font-playfair"
+        onClick={closeAllMenus}
+      >
+       
         {!hideSidebar && (
           <aside className="relative w-full md:w-64 bg-slate-900 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col">
            
             <div
               className="flex items-center gap-3 px-4 py-3 sm:py-4 border-b border-slate-800 cursor-pointer hover:bg-slate-800/40"
-              onClick={() => setIsAccountMenuOpen((prev) => !prev)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsSuggestionsOpen(false);
+                setIsThemeMenuOpen(false);
+                setIsSidebarMoreOpen(false);
+                setIsAccountMenuOpen((prev) => !prev);
+              }}
               aria-haspopup="true"
               aria-expanded={isAccountMenuOpen}
             >
@@ -245,22 +259,22 @@ const App = () => {
                 A
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold font-playfair truncate">
+                <p className="text-sm font-semibold truncate">
                   Akanksha Singh
                 </p>
-                
               </div>
             </div>
 
-           
+         
             {isAccountMenuOpen && (
               <div
                 className="absolute left-4 top-16 bg-slate-900 border border-slate-700 rounded-xl shadow-xl w-56 text-sm z-30"
                 role="menu"
                 aria-label="Account menu"
+                onClick={(e) => e.stopPropagation()}
               >
                 <button
-                  className="w-full text-left px-4 py-2 font-playfair hover:bg-slate-800"
+                  className="w-full text-left px-4 py-2 hover:bg-slate-800"
                   role="menuitem"
                   onClick={() => {
                     setAccountPanel("settings");
@@ -298,7 +312,7 @@ const App = () => {
               </div>
             )}
 
-         
+       
             <div className="px-3 sm:px-4 py-2 sm:py-3">
               <div className="flex items-center gap-2 bg-slate-800 rounded-md px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-slate-300">
                 <span className="material-symbols-outlined text-sm sm:text-base">
@@ -321,7 +335,11 @@ const App = () => {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setSelectedListId(item.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeAllMenus();
+                      setSelectedListId(item.id);
+                    }}
                     className={`
                       group relative
                       w-full flex items-center gap-3
@@ -377,10 +395,14 @@ const App = () => {
            
             <div className="border-t border-slate-800 px-4 py-2 sm:py-3 flex items-center justify-between text-xs sm:text-sm text-slate-300 relative">
               <button
-                onClick={handleAddList}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeAllMenus();
+                  handleAddList();
+                }}
                 className="flex items-center gap-2 hover:text-white"
               >
-                <span className="material-symbols-outlined text-sm sm:text-base">
+                <span className="material-symbols-outlined text-sm sm:text-base -mt-0.5">
                   add
                 </span>
                 <span>New list</span>
@@ -388,7 +410,8 @@ const App = () => {
 
               <div className="relative">
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsSidebarMoreOpen((p) => !p);
                     setIsThemeMenuOpen(false);
                     setIsSuggestionsOpen(false);
@@ -408,12 +431,13 @@ const App = () => {
                     className="absolute right-0 bottom-9 w-56 max-w-[90vw] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl text-xs z-30 py-1"
                     role="menu"
                     aria-label="List options"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <button
                       onClick={handlePrintList}
                       className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-800"
                     >
-                      <span className="material-symbols-outlined  font-playfair text-sm">
+                      <span className="material-symbols-outlined text-sm">
                         print
                       </span>
                       <span>Print list</span>
@@ -449,18 +473,13 @@ const App = () => {
           </aside>
         )}
 
-      
+    
         <main className="flex-1 flex flex-col">
-             <header className="relative h-12 sm:h-14 px-3 sm:px-4 flex items-center justify-between border-b border-slate-800 bg-slate-950/80 backdrop-blur z-20">
+       
+          <header className="relative h-12 sm:h-14 px-3 sm:px-4 flex items-center justify-between border-b border-slate-800 bg-slate-950/80 backdrop-blur z-20">
+         
             <div className="flex items-center">
-              <div
-                className="flex items-center gap-2 px-3 py-1.5
-                           bg-slate-900/80 border border-slate-700/80
-                           rounded-full shadow-sm
-                           text-[11px] sm:text-xs md:text-sm text-slate-300
-                           transition-all duration-200 ease-out
-                           hover:border-sky-400 hover:shadow-md hover:scale-[1.02]"
-              >
+              <div className="flex items-center gap-2 text-[11px] sm:text-xs md:text-sm text-slate-300">
                 <span className="material-symbols-outlined text-sm mr-1">
                   schedule
                 </span>
@@ -469,61 +488,79 @@ const App = () => {
               </div>
             </div>
 
+         
             <div className="flex items-center gap-1 sm:gap-2 text-slate-300">
-              
+           
               <button
                 title="Next theme"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   closeAllMenus();
                   cycleTheme();
                 }}
-                className="p-2 rounded-full bg-slate-900/60 hover:bg-slate-800/90
-                           border border-slate-700/80 shadow-sm
-                           transition-all duration-200 ease-out
-                           hover:scale-105"
+                className="p-1 sm:p-1.5 rounded-full transition-all duration-200 ease-out hover:scale-105"
               >
-                <span className="material-symbols-outlined text-xl sm:text-2xl">
-                  crop_original
-                </span>
+                <img
+                  src={themeIcon}
+                  alt="Theme"
+                  className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
+                />
               </button>
 
-              
+             
               <div className="relative">
                 <button
                   title="Suggestions"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsSuggestionsOpen((p) => !p);
                     setIsThemeMenuOpen(false);
                     setIsSidebarMoreOpen(false);
                   }}
-                  className="p-2 rounded-full hover:bg-slate-800/90
-                             border border-slate-700/80 shadow-sm
-                             transition-all duration-200 ease-out
-                             hover:scale-105"
+                  className="p-1 sm:p-1.5 rounded-full transition-all duration-200 ease-out hover:scale-105"
                   aria-haspopup="true"
                   aria-expanded={isSuggestionsOpen}
                 >
-                  <span className="material-symbols-outlined text-xl sm:text-2xl">
-                    lightbulb
-                  </span>
+                  <img
+                    src={suggestionIcon}
+                    alt="Suggestions"
+                    className="w-6 h-6 sm:w-7 sm:h-7 object-contain"
+                  />
                 </button>
                 {isSuggestionsOpen && (
                   <div
-                    className="absolute right-0 mt-2 sm:mt-3 w-72 sm:w-80 md:w-96 max-w-[90vw]
-                               
-                               shadow-2xl text-sm z-30 p-2"
+                    className="absolute right-0 mt-2 sm:mt-3 w-72 sm:w-80 md:w-96 max-w-[90vw] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl text-sm z-30 p-2"
                     role="menu"
                     aria-label="Suggestions"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="px-4 py-2 border-b font-medium text-slate-100">
+                    <div className="px-4 py-2 border-b border-slate-700 font-medium text-slate-100">
                       Suggestions
                     </div>
                     <button
-                      className="w-full text-left px-4 py-2.5 mt-1 hover:bg-slate-800/80 rounded-lg"
-                      role="menuitem"
-                    >
-                      Review your important tasks
-                    </button>
+  className="w-full text-left px-4 py-2.5 mt-1 hover:bg-slate-800/80 rounded-lg"
+  role="menuitem"
+  onClick={() => handleSuggestionClick("Review your important tasks")}
+>
+  Review your important tasks
+</button>
+
+<button
+  className="w-full text-left px-4 py-2.5 hover:bg-slate-800/80 rounded-lg"
+  role="menuitem"
+  onClick={() => handleSuggestionClick("Plan tomorrow's work")}
+>
+  Plan tomorrow&apos;s work
+</button>
+
+<button
+  className="w-full text-left px-4 py-2.5 hover:bg-slate-800/80 rounded-lg"
+  role="menuitem"
+  onClick={() => handleSuggestionClick("Add a reminder for study")}
+>
+  Add a reminder for study
+</button>
+
                     <button
                       className="w-full text-left px-4 py-2.5 hover:bg-slate-800/80 rounded-lg"
                       role="menuitem"
@@ -540,19 +577,17 @@ const App = () => {
                 )}
               </div>
 
-              
+            
               <div className="relative">
                 <button
                   title="More"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsThemeMenuOpen((p) => !p);
                     setIsSuggestionsOpen(false);
                     setIsSidebarMoreOpen(false);
                   }}
-                  className="p-2 rounded-full hover:bg-slate-800/90
-                             shadow-sm
-                             transition-all duration-200 ease-out
-                             hover:scale-105"
+                  className="p-1 sm:p-1.5 rounded-full transition-all duration-200 ease-out hover:scale-105"
                   aria-haspopup="true"
                   aria-expanded={isThemeMenuOpen}
                 >
@@ -563,14 +598,13 @@ const App = () => {
 
                 {isThemeMenuOpen && (
                   <div
-                    className="absolute right-0 mt-2 sm:mt-3 w-80 md:w-96 max-w-[90vw]
-                               bg-slate-900 border border-slate-700 rounded-2xl
-                               shadow-2xl text-sm z-30 p-3 sm:p-4"
+                    className="absolute right-0 mt-2 sm:mt-3 w-80 md:w-96 max-w-[90vw] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl text-sm z-30 p-3 sm:p-4"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                  
+                 
                     <div className="mb-3">
                       <div className="flex items-center gap-1 text-[11px] sm:text-xs font-semibold uppercase text-slate-400 mb-1">
-                        <span className="material-symbols-outlined font-playfair text-[10px] sm:text-xs">
+                        <span className="material-symbols-outlined text-[10px] sm:text-xs">
                           swap_vert
                         </span>
                         <span>Sort by</span>
@@ -596,7 +630,7 @@ const App = () => {
                       </div>
                     </div>
 
-                  
+               
                     <div className="mt-2">
                       <p className="text-[11px] sm:text-xs font-semibold uppercase text-slate-400 mb-2">
                         Theme
@@ -638,14 +672,15 @@ const App = () => {
                 )}
               </div>
 
-            
+             
               <button
                 title={hideSidebar ? "Show sidebar" : "Hide sidebar"}
-                onClick={() => setHideSidebar((p) => !p)}
-                className="p-2 rounded-full bg-slate-900/60 hover:bg-slate-800/90
-                           border border-slate-700/80 shadow-sm
-                           transition-all duration-200 ease-out
-                           hover:scale-105"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeAllMenus();
+                  setHideSidebar((p) => !p);
+                }}
+                className="p-1 sm:p-1.5 rounded-full transition-all duration-200 ease-out hover:scale-105"
               >
                 <span className="material-symbols-outlined text-xl sm:text-2xl">
                   {hideSidebar ? "close_fullscreen" : "open_in_full"}
@@ -654,7 +689,7 @@ const App = () => {
             </div>
           </header>
 
-         
+       
           <div className="flex-1 relative overflow-hidden">
             <div
               className={`absolute inset-0 ${
@@ -673,13 +708,14 @@ const App = () => {
             <div className="relative h-full flex flex-col">
               <div className="px-4 sm:px-6 md:px-10 pt-6 sm:pt-8">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
-                  {lists.find((l) => l.id === selectedListId)?.label || "My Day"}
+                  {lists.find((l) => l.id === selectedListId)?.label ||
+                    "My Day"}
                 </h1>
                 <p className="mt-1 text-xs sm:text-sm text-slate-200">
                   {todayString}
                 </p>
 
-            
+             
                 <div className="mt-3 sm:mt-4 flex gap-2 overflow-x-auto pb-1">
                   {weekDays.map((d) => {
                     const isToday = d.toDateString() === now.toDateString();
@@ -696,7 +732,9 @@ const App = () => {
                                     }`}
                       >
                         <span className="text-[9px] sm:text-[10px] uppercase tracking-wide">
-                          {d.toLocaleDateString("en-US", { weekday: "short" })}
+                          {d.toLocaleDateString("en-US", {
+                            weekday: "short",
+                          })}
                         </span>
                         <span className="text-xs sm:text-sm font-semibold">
                           {d.getDate()}
@@ -707,8 +745,11 @@ const App = () => {
                 </div>
               </div>
 
-              
-              <div className="flex-1 flex flex-col items-stretch sm:items-start justify-end pb-6 sm:pb-8 md:pb-10 px-3 sm:px-6 md:px-10">
+             
+              <div
+                className="flex-1 flex flex-col items-stretch sm:items-start justify-end pb-6 sm:pb-8 md:pb-10 px-3 sm:px-6 md:px-10"
+                onClick={(e) => e.stopPropagation()}
+              >
                 {selectedListId === "my-day" && (
                   <div className="mb-3 sm:mb-4 bg-slate-900/90 border border-slate-700 rounded-xl px-4 sm:px-6 md:px-10 py-4 sm:py-6 shadow-xl max-w-md w-full">
                     <div className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-slate-800 flex items-center justify-center">
@@ -800,10 +841,7 @@ const App = () => {
                       Enable notifications for due tasks
                     </label>
                     <label className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-300 mt-1">
-                      <input
-                        type="checkbox"
-                        className="accent-sky-500"
-                      />
+                      <input type="checkbox" className="accent-sky-500" />
                       Show completed tasks at the bottom
                     </label>
                   </div>
