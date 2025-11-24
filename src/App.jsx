@@ -248,9 +248,7 @@ const App = () => {
                 <p className="text-sm font-semibold truncate">
                   Akanksha Singh
                 </p>
-                <p className="text-[11px] text-slate-400 truncate">
-                  akanshasinghas@outlook.com
-                </p>
+                
               </div>
             </div>
 
