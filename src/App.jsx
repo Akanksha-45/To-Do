@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Todo from "./components/ToDo";
 import themeIcon from "./assets/icons8-theme-94.png";
 import suggestionIcon from "./assets/icons8-suggestion-64.png";
-const [quickTaskText, setQuickTaskText] = useState("");
+
 
 
 const initialLists = [
@@ -117,6 +117,15 @@ const App = () => {
   const [isSidebarMoreOpen, setIsSidebarMoreOpen] = useState(false);
 
   const [accountPanel, setAccountPanel] = useState(null);
+
+  const [quickTaskText, setQuickTaskText] = useState("");
+
+  const handleSuggestionClick = (text) => {
+    setQuickTaskText(text);
+    setIsSuggestionsOpen(false);
+  };
+
+
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);

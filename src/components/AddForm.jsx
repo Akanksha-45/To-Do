@@ -1,7 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const AddForm = ({ onAdd }) => {
+const AddForm = ({ onAdd, quickText, onQuickUsed }) => {
   const [text, setText] = useState("");
+
+ 
+  useEffect(() => {
+    if (quickText && quickText.trim() !== "") {
+      setText(quickText);
+     
+      if (onQuickUsed) onQuickUsed();
+    }
+  }, [quickText, onQuickUsed]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
