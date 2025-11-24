@@ -245,7 +245,7 @@ const App = () => {
                 A
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold truncate">
+                <p className="text-sm font-semibold font-playfair truncate">
                   Akanksha Singh
                 </p>
                 
@@ -260,7 +260,7 @@ const App = () => {
                 aria-label="Account menu"
               >
                 <button
-                  className="w-full text-left px-4 py-2 hover:bg-slate-800"
+                  className="w-full text-left px-4 py-2 font-playfair hover:bg-slate-800"
                   role="menuitem"
                   onClick={() => {
                     setAccountPanel("settings");
@@ -413,7 +413,7 @@ const App = () => {
                       onClick={handlePrintList}
                       className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-800"
                     >
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-symbols-outlined  font-playfair text-sm">
                         print
                       </span>
                       <span>Print list</span>
@@ -570,7 +570,7 @@ const App = () => {
                   
                     <div className="mb-3">
                       <div className="flex items-center gap-1 text-[11px] sm:text-xs font-semibold uppercase text-slate-400 mb-1">
-                        <span className="material-symbols-outlined text-[10px] sm:text-xs">
+                        <span className="material-symbols-outlined font-playfair text-[10px] sm:text-xs">
                           swap_vert
                         </span>
                         <span>Sort by</span>
