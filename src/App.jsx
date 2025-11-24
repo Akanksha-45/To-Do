@@ -496,7 +496,7 @@ const App = () => {
                     setIsThemeMenuOpen(false);
                     setIsSidebarMoreOpen(false);
                   }}
-                  className="p-2 rounded-full bg-slate-900/60 hover:bg-slate-800/90
+                  className="p-2 rounded-full hover:bg-slate-800/90
                              border border-slate-700/80 shadow-sm
                              transition-all duration-200 ease-out
                              hover:scale-105"
@@ -510,7 +510,7 @@ const App = () => {
                 {isSuggestionsOpen && (
                   <div
                     className="absolute right-0 mt-2 sm:mt-3 w-72 sm:w-80 md:w-96 max-w-[90vw]
-                               bg-slate-900 border border-slate-700 rounded-2xl
+                               border border-slate-700 rounded-2xl
                                shadow-2xl text-sm z-30 p-2"
                     role="menu"
                     aria-label="Suggestions"
