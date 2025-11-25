@@ -78,76 +78,87 @@ const Todo = ({ activeListId, sortBy, quickTaskText, setQuickTaskText }) => {
   return (
     <div className="bg-slate-900/95 border border-slate-700 rounded-2xl px-3 sm:px-4 md:px-6 py-3 sm:py-4 shadow-xl">
   
-      <form
-        onSubmit={handleAddTask}
-        className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center mb-4"
+     <form
+  onSubmit={handleAddTask}
+  className="flex flex-wrap gap-2 items-center mb-4"
+>
+ 
+  <div className="flex items-center gap-2 bg-slate-800 rounded-xl px-3 py-1.5 relative flex-1 min-w-[200px]">
+   
+    <div className="relative">
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          setIsAddMenuOpen((p) => !p);
+        }}
+        className="flex items-center justify-center h-7 w-7 rounded-full hover:bg-slate-700 transition-all"
+        title="Add"
       >
-        <div className="flex-1 flex items-center gap-2 bg-slate-800 rounded-xl px-3 py-1.5 relative">
-       
-          <div className="relative">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsAddMenuOpen((p) => !p);
-              }}
-              className="flex items-center justify-center h-7 w-7 rounded-full hover:bg-slate-700 transition-all"
-              title="Add"
-            >
-              <span className="material-symbols-outlined text-lg text-slate-200">
-                add
-              </span>
-            </button>
+        <span className="material-symbols-outlined text-lg text-slate-200">
+          add
+        </span>
+      </button>
 
-            {isAddMenuOpen && (
-              <div
-                className="absolute left-0 top-9 z-30 w-56 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl text-xs text-slate-100 py-1"
-                onMouseLeave={() => setIsAddMenuOpen(false)}
-              >
-                <button
-                  type="button"
-                  className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-800"
-                  onClick={() => {
-                    setIsAddMenuOpen(false);
-                    if (fileInputRef.current) fileInputRef.current.click();
-                  }}
-                >
-                  <span className="material-symbols-outlined text-sm">
-                    photo_library
-                  </span>
-                  <span>Photos &amp; videos</span>
-                </button>
-              </div>
-            )}
-          </div>
+      {isAddMenuOpen && (
+        <div
+          className="absolute left-0 top-9 z-30 w-56 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl text-xs text-slate-100 py-1"
+          onMouseLeave={() => setIsAddMenuOpen(false)}
+        >
+          <button
+            type="button"
+            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-800"
+            onClick={() => {
+              setIsAddMenuOpen(false);
+              if (fileInputRef.current) fileInputRef.current.click();
+            }}
+          >
+            <span className="material-symbols-outlined text-sm">
+              photo_library
+            </span>
+            <span>Photos &amp; videos</span>
+          </button>
+        </div>
+      )}
+    </div>
 
-         
+    <input
+      type="text"
+      placeholder="Try typing your task…"
+      className="flex-1 bg-transparent outline-none text-sm sm:text-base text-slate-50 placeholder:text-slate-400"
+      value={quickTaskText}
+      onChange={(e) => setQuickTaskText(e.target.value)}
+    />
+  </div>
+
+ 
+    <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-col gap-0.5 text-[10px] text-slate-400">
+        <span>Due date</span>
+        <div className="relative w-36">
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 material-symbols-outlined text-[16px] text-slate-300 pointer-events-none">
+            calendar_today
+          </span>
           <input
-            type="text"
-            placeholder="Try typing your task…"
-            className="flex-1 bg-transparent outline-none text-sm sm:text-base text-slate-50 placeholder:text-slate-400"
-            value={quickTaskText}
-            onChange={(e) => setQuickTaskText(e.target.value)}
+            type="date"
+            className="bg-white/5 border border-white/6 rounded-lg pl-9 pr-2 h-8 text-[11px] text-slate-100 outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent w-full bg-clip-padding backdrop-blur-sm"
+            value={taskDate}
+            onChange={(e) => setTaskDate(e.target.value)}
+            aria-label="Due date"
           />
         </div>
+      </div>
 
-        
-        <input
-          type="date"
-          className="bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-xs sm:text-sm text-slate-100 outline-none focus:border-sky-400"
-          value={taskDate}
-          onChange={(e) => setTaskDate(e.target.value)}
-        />
+    <button
+      type="submit"
+      className="h-8 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs sm:text-sm font-medium flex items-center justify-center gap-1 transition-colors"
+    >
+      <span className="material-symbols-outlined text-sm">done</span>
+      Add
+    </button>
+  </div>
+</form>
 
-       
-        <button
-          type="submit"
-          className="px-4 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-sm font-medium flex items-center justify-center gap-1 transition-colors"
-        >
-          <span className="material-symbols-outlined text-sm">done</span>
-          Add
-        </button>
-      </form>
 
     
       <input
@@ -194,11 +205,11 @@ const Todo = ({ activeListId, sortBy, quickTaskText, setQuickTaskText }) => {
                 </p>
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-slate-300">
                   {task.dueDate && (
-                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700">
-                      <span className="material-symbols-outlined text-[14px]">
+                    <span className="flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/6 border border-white/6 backdrop-blur-sm text-slate-100">
+                      <span className="material-symbols-outlined text-[14px] text-sky-300">
                         calendar_today
                       </span>
-                      <span>
+                      <span className="text-[11px]">
                         {new Date(task.dueDate).toLocaleDateString("en-IN", {
                           day: "2-digit",
                           month: "short",

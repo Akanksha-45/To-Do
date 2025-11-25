@@ -371,9 +371,9 @@ const App = () => {
                     }}
                     className={`
                       group relative
-                      w-full flex items-center gap-3
-                      px-3 sm:px-4 py-2
-                      rounded-lg text-sm mb-1
+                      w-full flex items-center gap-2
+                      px-1.5 sm:px-3 py-2.5
+                      rounded-lg sm:text-sm text-[13px] mb-0.5
                       transition-all duration-200 ease-out transform
                       ${
                         isActive
@@ -747,33 +747,40 @@ const App = () => {
                 </p>
 
               
-                <div className="mt-3 sm:mt-4 flex gap-2 overflow-x-auto pb-1">
-                  {weekDays.map((d) => {
-                    const isToday = d.toDateString() === now.toDateString();
-                    return (
-                      <div
-                        key={d.toISOString()}
-                        className={`flex flex-col items-center px-2 py-1 rounded-lg min-w-[44px] sm:min-w-[48px]
-                                    border border-transparent
-                                    transition-all duration-200 ease-out cursor-pointer text-[11px] sm:text-xs
-                                    ${
-                                      isToday
-                                        ? "bg-slate-900 text-white border-sky-400 shadow-md scale-[1.03]"
-                                        : "bg-slate-900/40 text-slate-100 hover:bg-slate-900/80 hover:text-white hover:border-sky-300 hover:shadow-md hover:-translate-y-0.5 hover:scale-105"
-                                    }`}
-                        title={d.toLocaleDateString("en-IN")}
-                      >
-                        <span className="text-[9px] sm:text-[10px] uppercase tracking-wide">
-                          {d.toLocaleDateString("en-US", {
-                            weekday: "short",
-                          })}
-                        </span>
-                        <span className="text-xs sm:text-sm font-semibold">
-                          {d.getDate()}
-                        </span>
-                      </div>
-                    );
-                  })}
+                <div className="mt-6 sm:mt-8">
+                  <div className="flex gap-3 overflow-x-auto pb-3">
+                    <div className="flex items-center gap-3 px-3 py-2 bg-slate-900/60 border border-slate-800 rounded-2xl shadow-lg backdrop-blur-sm">
+                      {weekDays.map((d) => {
+                        const isToday = d.toDateString() === now.toDateString();
+                        return (
+                          <button
+                            key={d.toISOString()}
+                            title={d.toLocaleDateString("en-IN")}
+                            onClick={() => {
+                              
+                            }}
+                            className={`flex flex-col items-center justify-center w-14 sm:w-16 py-2 rounded-xl transition-transform duration-200 ease-out transform focus:outline-none
+                              ${
+                                isToday
+                                  ? "bg-gradient-to-br from-sky-500 to-indigo-600 text-white shadow-[0_12px_30px_rgba(99,102,241,0.12)]"
+                                  : "bg-slate-800/40 text-slate-200 hover:bg-slate-800/70 hover:scale-105"
+                              }
+                            `}
+                          >
+                            <span className="text-[10px] sm:text-[11px] uppercase font-medium tracking-wide opacity-90">
+                              {d.toLocaleDateString("en-US", { weekday: "short" })}
+                            </span>
+                            <span className="mt-1 text-lg sm:text-xl font-semibold leading-none">
+                              {d.getDate()}
+                            </span>
+                            <span className="mt-0.5 text-[10px] text-slate-400">
+                              {d.toLocaleDateString("en-IN", { month: "short" })}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -872,43 +879,6 @@ const App = () => {
                       three-dots menu on the toolbar.
                     </p>
                   </div>
-                </>
-              )}
-
-              {accountPanel === "accounts" && (
-                <>
-                  <p className="text-[11px] sm:text-xs text-slate-300">
-                    Connected accounts:
-                  </p>
-                  <div className="mt-2 space-y-2">
-                    <div className="flex items-center justify-between bg-slate-900 rounded-lg px-3 py-2">
-                      <div>
-                        <p className="text-sm font-medium">
-                          akanshasinghas@outlook.com
-                        </p>
-                        <p className="text-[11px] sm:text-xs text-slate-400">
-                          Microsoft account
-                        </p>
-                      </div>
-                      <span className="material-symbols-outlined text-base sm:text-lg text-slate-400">
-                        check_circle
-                      </span>
-                    </div>
-                  </div>
-                  <button className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-md bg-sky-600 hover:bg-sky-500 text-[11px] sm:text-xs font-medium">
-                    <span className="material-symbols-outlined text-sm">
-                      person_add
-                    </span>
-                    Add another account
-                  </button>
-                </>
-              )}
-
-              {accountPanel === "theme" && (
-                <>
-                  <p className="text-[11px] sm:text-xs text-slate-300">
-                    Choose a background theme for your tasks:
-                  </p>
                   <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {themes.map((theme) => (
                       <button
