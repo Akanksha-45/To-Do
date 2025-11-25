@@ -1,156 +1,242 @@
-import React, { useState } from "react";
-import AddForm from "./AddForm";
+import React, { useState, useMemo, useRef } from "react";
 
-const initialTasks = [
-  {
-    id: 1,
-    text: "Finish React Microsoft To Do clone",
-    done: false,
-    important: true,
-    listId: "my-day",
-  },
-  {
-    id: 2,
-    text: "Study biosensors quiz",
-    done: false,
-    important: false,
-    listId: "tasks",
-  },
-];
+const Todo = ({ activeListId, sortBy, quickTaskText, setQuickTaskText }) => {
+  const [tasks, setTasks] = useState([]);
+  const [taskDate, setTaskDate] = useState("");
+  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
 
-const Todo = ({ activeListId, sortBy, quickTaskText, onQuickTaskUsed }) => {
-  const [tasks, setTasks] = useState(initialTasks);
+  const fileInputRef = useRef(null);
 
-  const addTask = (text) => {
-    setTasks((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        text,
-        done: false,
-        important: false,
-        listId: activeListId || "my-day",
-      },
-    ]);
+  const handleAddTask = (e) => {
+    e.preventDefault();
+    if (!quickTaskText.trim()) return;
+
+    const newTask = {
+      id: Date.now(),
+      listId: activeListId,
+      text: quickTaskText.trim(),
+      dueDate: taskDate || null,
+      completed: false,
+      createdAt: Date.now(),
+      important: false,
+    };
+
+    setTasks((prev) => [...prev, newTask]);
+    setQuickTaskText("");
+    setTaskDate("");
   };
 
-  const toggleDone = (id) => {
+  const handleToggleComplete = (id) => {
     setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
+      prev.map((t) =>
+        t.id === id ? { ...t, completed: !t.completed } : t
+      )
     );
   };
 
-  const toggleImportant = (id) => {
+  const handleToggleImportant = (id) => {
     setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, important: !t.important } : t))
+      prev.map((t) =>
+        t.id === id ? { ...t, important: !t.important } : t
+      )
     );
   };
 
-  const deleteTask = (id) => {
+  const handleDeleteTask = (id) => {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const visibleTasks = tasks.filter((t) => {
-    if (activeListId === "important") return t.important;
-    if (activeListId === "my-day") return t.listId === "my-day";
-    if (activeListId === "tasks") return true;
-    if (activeListId === "flagged") return false;
-    return t.listId === activeListId;
-  });
+  const handleFilesChosen = (event) => {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
 
-  const sortedTasks = [...visibleTasks].sort((a, b) => {
+    console.log("Selected files:", files);
+
+    event.target.value = "";
+  };
+
+  const currentTasks = useMemo(() => {
+    let listTasks = tasks.filter((t) => t.listId === activeListId);
+
     if (sortBy === "important") {
-      if (a.important === b.important) return 0;
-      return a.important ? -1 : 1;
+      listTasks = [...listTasks].sort((a, b) => {
+        if (a.important === b.important) return 0;
+        return a.important ? -1 : 1;
+      });
+    } else if (sortBy === "done") {
+      listTasks = [...listTasks].sort((a, b) => {
+        if (a.completed === b.completed) return 0;
+        return a.completed ? 1 : -1;
+      });
+    } else {
+      listTasks = [...listTasks].sort((a, b) => a.createdAt - b.createdAt);
     }
-    if (sortBy === "done") {
-      if (a.done === b.done) return 0;
-      return a.done ? 1 : -1;
-    }
-    return 0;
-  });
+
+    return listTasks;
+  }, [tasks, activeListId, sortBy]);
 
   return (
-    <div className="bg-slate-950/80 rounded-2xl border border-slate-800/60 px-3 sm:px-4 md:px-6 py-4 sm:py-5 backdrop-blur shadow-xl">
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs sm:text-sm font-medium text-slate-200">
-          Tasks ({sortedTasks.length})
-        </p>
-      </div>
-
-      <div className="space-y-1 max-h-52 sm:max-h-64 overflow-y-auto pr-1">
-        {sortedTasks.length === 0 && (
-          <p className="text-[11px] sm:text-xs text-slate-400 italic">
-            No tasks yet in this list — add your first one below.
-          </p>
-        )}
-
-        {sortedTasks.map((task) => (
-          <div
-            key={task.id}
-            className="group flex items-center gap-2 sm:gap-3 px-1.5 sm:px-2 py-2 rounded-md
-                       hover:bg-slate-900/90 hover:translate-x-1 hover:shadow-sm
-                       transition-all duration-200 ease-out"
-          >
+    <div className="bg-slate-900/95 border border-slate-700 rounded-2xl px-3 sm:px-4 md:px-6 py-3 sm:py-4 shadow-xl">
+  
+      <form
+        onSubmit={handleAddTask}
+        className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center mb-4"
+      >
+        <div className="flex-1 flex items-center gap-2 bg-slate-800 rounded-xl px-3 py-1.5 relative">
+       
+          <div className="relative">
             <button
-              onClick={() => toggleDone(task.id)}
-              className={`h-4 w-4 sm:h-5 sm:w-5 rounded-full border flex items-center justify-center
-                ${
-                  task.done
-                    ? "bg-emerald-500 border-emerald-500"
-                    : "border-slate-500 hover:border-emerald-400"
-                } transition`}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsAddMenuOpen((p) => !p);
+              }}
+              className="flex items-center justify-center h-7 w-7 rounded-full hover:bg-slate-700 transition-all"
+              title="Add"
             >
-              {task.done && (
-                <span className="material-symbols-outlined text-[10px] sm:text-xs text-slate-950">
-                  check
-                </span>
-              )}
-            </button>
-
-            <div className="flex-1">
-              <p
-                className={`text-xs sm:text-sm ${
-                  task.done ? "line-through text-slate-500" : "text-slate-100"
-                }`}
-              >
-                {task.text}
-              </p>
-            </div>
-
-            <button
-              onClick={() => toggleImportant(task.id)}
-              className="p-1 rounded-full hover:bg-slate-800 transition"
-            >
-              <span
-                className={`material-symbols-outlined text-sm ${
-                  task.important
-                    ? "text-yellow-400"
-                    : "text-slate-500 group-hover:text-slate-300"
-                }`}
-              >
-                star
+              <span className="material-symbols-outlined text-lg text-slate-200">
+                add
               </span>
             </button>
 
-            <button
-              onClick={() => deleteTask(task.id)}
-              className="p-1 rounded-full hover:bg-slate-800 text-slate-500 hover:text-red-400 transition"
-            >
-              <span className="material-symbols-outlined text-xs sm:text-sm">
-                delete
-              </span>
-            </button>
+            {isAddMenuOpen && (
+              <div
+                className="absolute left-0 top-9 z-30 w-56 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl text-xs text-slate-100 py-1"
+                onMouseLeave={() => setIsAddMenuOpen(false)}
+              >
+                <button
+                  type="button"
+                  className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-800"
+                  onClick={() => {
+                    setIsAddMenuOpen(false);
+                    if (fileInputRef.current) fileInputRef.current.click();
+                  }}
+                >
+                  <span className="material-symbols-outlined text-sm">
+                    photo_library
+                  </span>
+                  <span>Photos &amp; videos</span>
+                </button>
+              </div>
+            )}
           </div>
-        ))}
-      </div>
 
-     
-      <AddForm
-        onAdd={addTask}
-        quickText={quickTaskText}
-        onQuickUsed={onQuickTaskUsed}
+         
+          <input
+            type="text"
+            placeholder="Try typing your task…"
+            className="flex-1 bg-transparent outline-none text-sm sm:text-base text-slate-50 placeholder:text-slate-400"
+            value={quickTaskText}
+            onChange={(e) => setQuickTaskText(e.target.value)}
+          />
+        </div>
+
+        
+        <input
+          type="date"
+          className="bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-xs sm:text-sm text-slate-100 outline-none focus:border-sky-400"
+          value={taskDate}
+          onChange={(e) => setTaskDate(e.target.value)}
+        />
+
+       
+        <button
+          type="submit"
+          className="px-4 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-sm font-medium flex items-center justify-center gap-1 transition-colors"
+        >
+          <span className="material-symbols-outlined text-sm">done</span>
+          Add
+        </button>
+      </form>
+
+    
+      <input
+        type="file"
+        multiple
+        accept="image/*,video/*"
+        ref={fileInputRef}
+        className="hidden"
+        onChange={handleFilesChosen}
       />
+
+   
+      {currentTasks.length === 0 ? (
+        <p className="text-xs sm:text-sm text-slate-300 italic">
+          No tasks yet. Add something to get started ✨
+        </p>
+      ) : (
+        <ul className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+          {currentTasks.map((task) => (
+            <li
+              key={task.id}
+              className="flex items-start gap-2 sm:gap-3 bg-slate-900/80 rounded-xl px-3 py-2 border border-slate-700/70"
+            >
+              <button
+                onClick={() => handleToggleComplete(task.id)}
+                className="mt-0.5 h-5 w-5 rounded-full border border-slate-500 flex items-center justify-center text-xs text-slate-200"
+              >
+                {task.completed && (
+                  <span className="material-symbols-outlined text-base">
+                    check
+                  </span>
+                )}
+              </button>
+
+              <div className="flex-1 min-w-0">
+                <p
+                  className={`text-sm sm:text-base break-words ${
+                    task.completed
+                      ? "line-through text-slate-500"
+                      : "text-slate-50"
+                  }`}
+                >
+                  {task.text}
+                </p>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-slate-300">
+                  {task.dueDate && (
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700">
+                      <span className="material-symbols-outlined text-[14px]">
+                        calendar_today
+                      </span>
+                      <span>
+                        {new Date(task.dueDate).toLocaleDateString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </span>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => handleToggleImportant(task.id)}
+                    className={`flex items-center gap-1 px-2 py-0.5 rounded-full border ${
+                      task.important
+                        ? "border-amber-400 text-amber-300 bg-amber-900/30"
+                        : "border-slate-600 text-slate-300 hover:bg-slate-800"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[14px]">
+                      star
+                    </span>
+                    <span>{task.important ? "Important" : "Mark important"}</span>
+                  </button>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleDeleteTask(task.id)}
+                className="mt-0.5 p-1 rounded-full hover:bg-slate-800 text-slate-400 hover:text-red-300"
+              >
+                <span className="material-symbols-outlined text-base">
+                  delete
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

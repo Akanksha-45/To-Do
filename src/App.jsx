@@ -3,8 +3,6 @@ import Todo from "./components/ToDo";
 import themeIcon from "./assets/icons8-theme-94.png";
 import suggestionIcon from "./assets/icons8-suggestion-64.png";
 
-
-
 const initialLists = [
   { id: "my-day", label: "My Day", icon: "wb_sunny" },
   { id: "important", label: "Important", icon: "star" },
@@ -81,11 +79,6 @@ const themes = [
   },
 ];
 
-const handleSuggestionClick = (text) => {
-  setQuickTaskText(text);       
-  setIsSuggestionsOpen(false);
-};
-
 const getWeekDays = (currentDate) => {
   const day = currentDate.getDay();
   const weekStart = new Date(currentDate);
@@ -118,14 +111,8 @@ const App = () => {
 
   const [accountPanel, setAccountPanel] = useState(null);
 
+ 
   const [quickTaskText, setQuickTaskText] = useState("");
-
-  const handleSuggestionClick = (text) => {
-    setQuickTaskText(text);
-    setIsSuggestionsOpen(false);
-  };
-
-
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -147,7 +134,14 @@ const App = () => {
   const weekDays = getWeekDays(now);
   const activeTheme = themes.find((t) => t.id === activeThemeId) || themes[0];
 
-  const selectedList = lists.find((l) => l.id === selectedListId);
+  const selectedList =
+    lists.find((l) => l.id === selectedListId) || initialLists[0];
+
+  
+  const handleSuggestionClick = (text) => {
+    setQuickTaskText(text);
+    setIsSuggestionsOpen(false);
+  };
 
   const handlePrintList = () => {
     setIsSidebarMoreOpen(false);
@@ -186,6 +180,33 @@ const App = () => {
       if (ok) {
         setPinnedListIds((prev) => [...prev, selectedList.id]);
       }
+    }
+  };
+
+
+  const handleDeleteCurrentList = () => {
+    setIsSidebarMoreOpen(false);
+    if (!selectedList) return;
+
+ 
+    const isDefault = initialLists.some((l) => l.id === selectedList.id);
+    if (isDefault) {
+      alert("Ye default list hai, ise delete nahi kar sakte 🙂");
+      return;
+    }
+
+    const ok = window.confirm(
+      `Are you sure you want to delete the list "${selectedList.label}"?`
+    );
+    if (!ok) return;
+
+    setLists((prev) => prev.filter((l) => l.id !== selectedList.id));
+    setPinnedListIds((prev) => prev.filter((id) => id !== selectedList.id));
+
+    if (selectedListId === selectedList.id) {
+      const fallback =
+        initialLists.find((l) => l.id === "my-day") || initialLists[0];
+      setSelectedListId(fallback.id);
     }
   };
 
@@ -243,15 +264,14 @@ const App = () => {
 
   return (
     <>
-     
       <div
-        className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col md:flex-row font-playfair"
+        className="min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col md:flex-row font-body"
         onClick={closeAllMenus}
       >
-       
+        
         {!hideSidebar && (
           <aside className="relative w-full md:w-64 bg-slate-900 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col">
-           
+          
             <div
               className="flex items-center gap-3 px-4 py-3 sm:py-4 border-b border-slate-800 cursor-pointer hover:bg-slate-800/40"
               onClick={(e) => {
@@ -274,7 +294,6 @@ const App = () => {
               </div>
             </div>
 
-         
             {isAccountMenuOpen && (
               <div
                 className="absolute left-4 top-16 bg-slate-900 border border-slate-700 rounded-xl shadow-xl w-56 text-sm z-30"
@@ -321,7 +340,7 @@ const App = () => {
               </div>
             )}
 
-       
+           
             <div className="px-3 sm:px-4 py-2 sm:py-3">
               <div className="flex items-center gap-2 bg-slate-800 rounded-md px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-slate-300">
                 <span className="material-symbols-outlined text-sm sm:text-base">
@@ -335,7 +354,7 @@ const App = () => {
               </div>
             </div>
 
-           
+          
             <nav className="px-2 flex-1 overflow-y-auto">
               {lists.map((item) => {
                 const isActive = item.id === selectedListId;
@@ -344,6 +363,7 @@ const App = () => {
                 return (
                   <button
                     key={item.id}
+                    title={item.label}
                     onClick={(e) => {
                       e.stopPropagation();
                       closeAllMenus();
@@ -401,7 +421,7 @@ const App = () => {
               })}
             </nav>
 
-           
+            
             <div className="border-t border-slate-800 px-4 py-2 sm:py-3 flex items-center justify-between text-xs sm:text-sm text-slate-300 relative">
               <button
                 onClick={(e) => {
@@ -475,6 +495,17 @@ const App = () => {
                           : "Pin to Start"}
                       </span>
                     </button>
+
+                  
+                    <button
+                      onClick={handleDeleteCurrentList}
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-800 text-red-300"
+                    >
+                      <span className="material-symbols-outlined text-sm">
+                        delete
+                      </span>
+                      <span>Delete list</span>
+                    </button>
                   </div>
                 )}
               </div>
@@ -482,11 +513,10 @@ const App = () => {
           </aside>
         )}
 
-    
-        <main className="flex-1 flex flex-col">
        
-          <header className="relative h-12 sm:h-14 px-3 sm:px-4 flex items-center justify-between border-b border-slate-800 bg-slate-950/80 backdrop-blur z-20">
+        <main className="flex-1 flex flex-col">
          
+          <header className="relative h-12 sm:h-14 px-3 sm:px-4 flex items-center justify-between border-b border-slate-800 bg-slate-950/80 backdrop-blur z-20">
             <div className="flex items-center">
               <div className="flex items-center gap-2 text-[11px] sm:text-xs md:text-sm text-slate-300">
                 <span className="material-symbols-outlined text-sm mr-1">
@@ -497,9 +527,8 @@ const App = () => {
               </div>
             </div>
 
-         
             <div className="flex items-center gap-1 sm:gap-2 text-slate-300">
-           
+             
               <button
                 title="Next theme"
                 onClick={(e) => {
@@ -516,7 +545,6 @@ const App = () => {
                 />
               </button>
 
-             
               <div className="relative">
                 <button
                   title="Suggestions"
@@ -546,39 +574,33 @@ const App = () => {
                     <div className="px-4 py-2 border-b border-slate-700 font-medium text-slate-100">
                       Suggestions
                     </div>
+
                     <button
-  className="w-full text-left px-4 py-2.5 mt-1 hover:bg-slate-800/80 rounded-lg"
-  role="menuitem"
-  onClick={() => handleSuggestionClick("Review your important tasks")}
->
-  Review your important tasks
-</button>
-
-<button
-  className="w-full text-left px-4 py-2.5 hover:bg-slate-800/80 rounded-lg"
-  role="menuitem"
-  onClick={() => handleSuggestionClick("Plan tomorrow's work")}
->
-  Plan tomorrow&apos;s work
-</button>
-
-<button
-  className="w-full text-left px-4 py-2.5 hover:bg-slate-800/80 rounded-lg"
-  role="menuitem"
-  onClick={() => handleSuggestionClick("Add a reminder for study")}
->
-  Add a reminder for study
-</button>
+                      className="w-full text-left px-4 py-2.5 mt-1 hover:bg-slate-800/80 rounded-lg"
+                      role="menuitem"
+                      onClick={() =>
+                        handleSuggestionClick("Review your important tasks")
+                      }
+                    >
+                      Review your important tasks
+                    </button>
 
                     <button
                       className="w-full text-left px-4 py-2.5 hover:bg-slate-800/80 rounded-lg"
                       role="menuitem"
+                      onClick={() =>
+                        handleSuggestionClick("Plan tomorrow's work")
+                      }
                     >
                       Plan tomorrow&apos;s work
                     </button>
+
                     <button
                       className="w-full text-left px-4 py-2.5 hover:bg-slate-800/80 rounded-lg"
                       role="menuitem"
+                      onClick={() =>
+                        handleSuggestionClick("Add a reminder for study")
+                      }
                     >
                       Add a reminder for study
                     </button>
@@ -586,7 +608,7 @@ const App = () => {
                 )}
               </div>
 
-            
+             
               <div className="relative">
                 <button
                   title="More"
@@ -610,36 +632,34 @@ const App = () => {
                     className="absolute right-0 mt-2 sm:mt-3 w-80 md:w-96 max-w-[90vw] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl text-sm z-30 p-3 sm:p-4"
                     onClick={(e) => e.stopPropagation()}
                   >
-                 
                     <div className="mb-3">
-                      <div className="flex items-center gap-1 text-[11px] sm:text-xs font-semibold uppercase text-slate-400 mb-1">
-                        <span className="material-symbols-outlined text-[10px] sm:text-xs">
-                          swap_vert
-                        </span>
-                        <span>Sort by</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { id: "my-order", label: "My order" },
-                          { id: "important", label: "Importance" },
-                          { id: "done", label: "Completed" },
-                        ].map((opt) => (
-                          <button
-                            key={opt.id}
-                            onClick={() => setSortBy(opt.id)}
-                            className={`px-2 py-1 rounded-md border text-[11px] sm:text-xs ${
-                              sortBy === opt.id
-                                ? "border-sky-400 text-sky-300 bg-sky-900/40"
-                                : "border-slate-600 text-slate-200 hover:bg-slate-800"
-                            }`}
-                          >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+  <div className="flex items-center gap-1 text-[11px] sm:text-xs font-semibold uppercase text-slate-400 mb-1">
+    <span className="material-symbols-outlined text-[10px] sm:text-xs">
+      swap_vert
+    </span>
+    <span>Sort by</span>
+  </div>
 
-               
+  <div className="flex flex-wrap gap-2">
+    {[
+      { id: "my-order", label: "My order" },
+    ].map((opt) => (
+      <button
+        key={opt.id}
+        onClick={() => setSortBy(opt.id)}
+        className={`px-2 py-1 rounded-md border text-[11px] sm:text-xs ${
+          sortBy === opt.id
+            ? "border-sky-400 text-sky-300 bg-sky-900/40"
+            : "border-slate-600 text-slate-200 hover:bg-slate-800"
+        }`}
+      >
+        {opt.label}
+      </button>
+    ))}
+  </div>
+</div>
+
+
                     <div className="mt-2">
                       <p className="text-[11px] sm:text-xs font-semibold uppercase text-slate-400 mb-2">
                         Theme
@@ -716,15 +736,17 @@ const App = () => {
 
             <div className="relative h-full flex flex-col">
               <div className="px-4 sm:px-6 md:px-10 pt-6 sm:pt-8">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
-                  {lists.find((l) => l.id === selectedListId)?.label ||
-                    "My Day"}
+                <h1
+                  className="font-heading text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight"
+                  title={`${selectedList.label} list`}
+                >
+                  {selectedList.label}
                 </h1>
                 <p className="mt-1 text-xs sm:text-sm text-slate-200">
                   {todayString}
                 </p>
 
-             
+              
                 <div className="mt-3 sm:mt-4 flex gap-2 overflow-x-auto pb-1">
                   {weekDays.map((d) => {
                     const isToday = d.toDateString() === now.toDateString();
@@ -739,6 +761,7 @@ const App = () => {
                                         ? "bg-slate-900 text-white border-sky-400 shadow-md scale-[1.03]"
                                         : "bg-slate-900/40 text-slate-100 hover:bg-slate-900/80 hover:text-white hover:border-sky-300 hover:shadow-md hover:-translate-y-0.5 hover:scale-105"
                                     }`}
+                        title={d.toLocaleDateString("en-IN")}
                       >
                         <span className="text-[9px] sm:text-[10px] uppercase tracking-wide">
                           {d.toLocaleDateString("en-US", {
@@ -754,27 +777,11 @@ const App = () => {
                 </div>
               </div>
 
-             
               <div
                 className="flex-1 flex flex-col items-stretch sm:items-start justify-end pb-6 sm:pb-8 md:pb-10 px-3 sm:px-6 md:px-10"
                 onClick={(e) => e.stopPropagation()}
               >
-                {selectedListId === "my-day" && (
-                  <div className="mb-3 sm:mb-4 bg-slate-900/90 border border-slate-700 rounded-xl px-4 sm:px-6 md:px-10 py-4 sm:py-6 shadow-xl max-w-md w-full">
-                    <div className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-slate-800 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-xl sm:text-2xl">
-                        calendar_today
-                      </span>
-                    </div>
-                    <h2 className="text-base sm:text-lg font-semibold mb-1 text-center">
-                      Focus on your day
-                    </h2>
-                    <p className="text-[11px] sm:text-xs text-slate-300 text-center">
-                      Get things done with My Day. Add tasks that matter today
-                      and check them off one by one.
-                    </p>
-                  </div>
-                )}
+              
 
                 {selectedListId === "flagged" && (
                   <p className="mb-3 sm:mb-4 text-[11px] sm:text-sm text-rose-200 flex items-center gap-2">
@@ -795,7 +802,12 @@ const App = () => {
                 )}
 
                 <div className="w-full max-w-3xl">
-                  <Todo activeListId={selectedListId} sortBy={sortBy} />
+                  <Todo
+                    activeListId={selectedListId}
+                    sortBy={sortBy}
+                    quickTaskText={quickTaskText}
+                    setQuickTaskText={setQuickTaskText}
+                  />
                 </div>
               </div>
             </div>
@@ -803,7 +815,6 @@ const App = () => {
         </main>
       </div>
 
-     
       {accountPanel && (
         <div
           className="fixed inset-0 z-40 flex items-stretch justify-end bg-black/40"
@@ -818,10 +829,10 @@ const App = () => {
           >
             <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-slate-800">
               <div>
-                <h2 className="text-base sm:text-lg font-semibold">
+                <h2 className="text-base sm:text-lg font-semibold font-heading">
                   {panelInfo.title}
                 </h2>
-                <p className="text-[11px] sm:text-xs text-slate-400">
+                <p className="text-[11px] sm:text-xs text-slate-400 font-body">
                   {panelInfo.subtitle}
                 </p>
               </div>
@@ -836,7 +847,7 @@ const App = () => {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 sm:px-5 py-3 sm:py-4 text-sm space-y-4">
+            <div className="flex-1 overflow-y-auto px-4 sm:px-5 py-3 sm:py-4 text-sm space-y-4 font-body">
               {accountPanel === "settings" && (
                 <>
                   <div>
