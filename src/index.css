@@ -4,14 +4,15 @@
 
 
 :root {
-  --font-body: "Roboto Condensed", system-ui, -apple-system, BlinkMacSystemFont,
-    sans-serif;
-  --font-heading: "Playfair Display", "Times New Roman", serif;
+  --font-primary: "Barlow Condensed", "Roboto Condensed", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: var(--font-primary);
+  --font-heading: var(--font-primary);
+  --font-list: var(--font-primary);
 }
 
 body {
-  @apply bg-yellow-950 text-white; 
-   font-family: var(--font-body); 
+  @apply bg-yellow-950 text-white;
+  font-family: var(--font-body);
 }
 
 
@@ -20,6 +21,24 @@ body {
 }
 .font-body {
   font-family: var(--font-body);
+}
+
+.font-list {
+  font-family: var(--font-list);
+}
+
+/* Remove browser default blue focus/outline for date inputs and use subtle focus */
+input[type="date"], input[type="date"]:focus {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+  box-shadow: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.95;
+  filter: none;
 }
 
 .material-symbols-outlined {

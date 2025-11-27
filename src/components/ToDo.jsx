@@ -80,10 +80,10 @@ const Todo = ({ activeListId, sortBy, quickTaskText, setQuickTaskText }) => {
   
      <form
   onSubmit={handleAddTask}
-  className="flex flex-wrap gap-2 items-center mb-4"
+  className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mb-4"
 >
  
-  <div className="flex items-center gap-2 bg-slate-800 rounded-xl px-3 py-1.5 relative flex-1 min-w-[200px]">
+  <div className="flex items-center gap-2 bg-slate-800 rounded-xl px-3 py-1.5 relative flex-1 w-full sm:flex-auto">
    
     <div className="relative">
       <button
@@ -125,23 +125,23 @@ const Todo = ({ activeListId, sortBy, quickTaskText, setQuickTaskText }) => {
     <input
       type="text"
       placeholder="Try typing your task…"
-      className="flex-1 bg-transparent outline-none text-sm sm:text-base text-slate-50 placeholder:text-slate-400"
+      className="flex-1 bg-transparent outline-none text-sm sm:text-base text-slate-50 placeholder:text-slate-400 w-full"
       value={quickTaskText}
       onChange={(e) => setQuickTaskText(e.target.value)}
     />
   </div>
 
  
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex items-center gap-2 flex-wrap sm:flex-row">
       <div className="flex flex-col gap-0.5 text-[10px] text-slate-400">
         <span>Due date</span>
-        <div className="relative w-36">
+        <div className="relative w-full sm:w-36">
           <span className="absolute left-2 top-1/2 -translate-y-1/2 material-symbols-outlined text-[16px] text-slate-300 pointer-events-none">
             calendar_today
           </span>
           <input
             type="date"
-            className="bg-white/5 border border-white/6 rounded-lg pl-9 pr-2 h-8 text-[11px] text-slate-100 outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent w-full bg-clip-padding backdrop-blur-sm"
+            className="bg-white/5 border border-white/6 rounded-lg pl-9 pr-2 h-8 text-[11px] text-slate-100 outline-none focus:border-sky-400 focus:ring-0 w-full bg-clip-padding"
             value={taskDate}
             onChange={(e) => setTaskDate(e.target.value)}
             aria-label="Due date"
@@ -151,7 +151,7 @@ const Todo = ({ activeListId, sortBy, quickTaskText, setQuickTaskText }) => {
 
     <button
       type="submit"
-      className="h-8 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs sm:text-sm font-medium flex items-center justify-center gap-1 transition-colors"
+      className="h-8 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs sm:text-sm font-medium flex items-center justify-center gap-1 transition-colors w-full sm:w-auto"
     >
       <span className="material-symbols-outlined text-sm">done</span>
       Add
@@ -224,7 +224,7 @@ const Todo = ({ activeListId, sortBy, quickTaskText, setQuickTaskText }) => {
                     onClick={() => handleToggleImportant(task.id)}
                     className={`flex items-center gap-1 px-2 py-0.5 rounded-full border ${
                       task.important
-                        ? "border-amber-400 text-amber-300 bg-amber-900/30"
+                        ? "border-white/30 text-white bg-white/6"
                         : "border-slate-600 text-slate-300 hover:bg-slate-800"
                     }`}
                   >

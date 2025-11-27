@@ -409,7 +409,7 @@ const App = () => {
                       {item.icon}
                     </span>
 
-                    <span className="truncate">{item.label}</span>
+                    <span className="truncate font-list">{item.label}</span>
 
                     {isPinned && (
                       <span className="material-symbols-outlined text-xs ml-auto text-sky-300">
@@ -748,8 +748,8 @@ const App = () => {
 
               
                 <div className="mt-6 sm:mt-8">
-                  <div className="flex gap-3 overflow-x-auto pb-3">
-                    <div className="flex items-center gap-3 px-3 py-2 bg-slate-900/60 border border-slate-800 rounded-2xl shadow-lg backdrop-blur-sm">
+                  <div className="flex gap-2 overflow-x-auto pb-3">
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/6 backdrop-blur-sm shadow-sm">
                       {weekDays.map((d) => {
                         const isToday = d.toDateString() === now.toDateString();
                         return (
@@ -757,22 +757,27 @@ const App = () => {
                             key={d.toISOString()}
                             title={d.toLocaleDateString("en-IN")}
                             onClick={() => {
-                              
+                           
                             }}
-                            className={`flex flex-col items-center justify-center w-14 sm:w-16 py-2 rounded-xl transition-transform duration-200 ease-out transform focus:outline-none
-                              ${
-                                isToday
-                                  ? "bg-gradient-to-br from-sky-500 to-indigo-600 text-white shadow-[0_12px_30px_rgba(99,102,241,0.12)]"
-                                  : "bg-slate-800/40 text-slate-200 hover:bg-slate-800/70 hover:scale-105"
-                              }
+                            className={`flex flex-col items-center justify-center w-12 sm:w-14 md:w-16 py-2 rounded-2xl transition-transform duration-200 ease-out transform focus:outline-none min-w-[44px]
+                              ${isToday ? "bg-white/6 text-slate-100 ring-1 ring-white/8" : "bg-white/3 text-slate-200 hover:bg-white/5 hover:scale-105"}
                             `}
                           >
                             <span className="text-[10px] sm:text-[11px] uppercase font-medium tracking-wide opacity-90">
                               {d.toLocaleDateString("en-US", { weekday: "short" })}
                             </span>
-                            <span className="mt-1 text-lg sm:text-xl font-semibold leading-none">
-                              {d.getDate()}
-                            </span>
+
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-base sm:text-xl font-semibold leading-none">
+                                {d.getDate()}
+                              </span>
+                              {isToday && (
+                                <span className="material-symbols-outlined text-[16px] text-sky-300" aria-hidden>
+                                  calendar_today
+                                </span>
+                              )}
+                            </div>
+
                             <span className="mt-0.5 text-[10px] text-slate-400">
                               {d.toLocaleDateString("en-IN", { month: "short" })}
                             </span>
